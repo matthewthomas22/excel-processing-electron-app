@@ -5,8 +5,10 @@
   "main": "dist/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "start": "npm run build && electron ."
+    "build": "tsc && npx copyfiles -u 1 src/index.html dist",
+    "tailwind": "npx @tailwindcss/cli -i ./src/input.css -o ./dist/tailwind.css --watch",
+    "electron": "npm run build && electron .",
+    "dev": "concurrently \"npm run tailwind\" \"npm run electron\""
   },
   "keywords": [],
   "author": "",
@@ -14,8 +16,14 @@
   "type": "commonjs",
   "devDependencies": {
     "@types/node": "^25.3.3",
+    "concurrently": "^9.2.1",
     "electron": "^40.6.1",
+    "tailwindcss": "^4.2.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.2.1",
+    "xlsx": "^0.18.5"
   }
 }

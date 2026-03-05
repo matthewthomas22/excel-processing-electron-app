@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="./tailwind.css" />
+  </head>
+  <body>
+    <div class="p-4">
+      <div
+        class="flex items-center justify-center border-2 border-dashed border-slate-400 rounded-lg h-40 text-slate-600 hover:bg-indigo-50 hover:border-indigo-50 transition"
+        id="dropZone"
+      >
+        Drag & Drop Excel Files here
+      </div>
+      <button
+        class="mt-8 px-2 py-1 w-80 hover:bg-slate-500 bg-slate-300 rounded-lg"
+        onclick="runPivot()"
+        id="runBtn"
+      >
+        Run Pivot
+      </button>
+    </div>
+    <div id="pivotTable" class="mt-6 overflow-auto"></div>
+
+    <script src="./renderer.js"></script>
+  </body>
+</html>

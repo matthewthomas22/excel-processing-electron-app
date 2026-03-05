@@ -1,6 +1,5 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
-import { dialog } from "electron";
 import { Worker } from "worker_threads";
 
 function createWindow() {
@@ -14,10 +13,10 @@ function createWindow() {
     },
   });
 
-  ipcMain.handle("worker:test", async () => {
+  ipcMain.handle("excel:pivot", async (_, payload) => {
     return new Promise((resolve, reject) => {
       const worker = new Worker(path.join(__dirname, "worker.js"), {
-        workerData: { iterations: 5_000_000 },
+        workerData: payload,
       });
 
       worker.on("message", resolve);
@@ -25,22 +24,7 @@ function createWindow() {
     });
   });
 
-  win.loadURL(
-    "data:text/html, " +
-      encodeURIComponent(
-        `<h1>Electron works</h1>
-        <button onclick="run()" >Run Worker</button>
-        <pre id="out" ></pre>
-
-        <script>
-            async function run(){
-                const res = await window.api.runWorker()
-                document.getElementById('out').innerText = JSON.stringify(res, null, 2)
-            }
-        </script>
-        `
-      )
-  );
+  win.loadFile(path.join(__dirname, "index.html"));
 }
 
 app.whenReady().then(createWindow);
