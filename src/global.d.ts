@@ -6,7 +6,7 @@ declare global {
     api: {
       pivotExcel: (
         filePath: string,
-        pivot: PivotConfig,
+        pivot: PivotConfig[],
         sheetName: string
       ) => Promise<any>;
 

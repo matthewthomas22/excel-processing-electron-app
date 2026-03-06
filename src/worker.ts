@@ -1,7 +1,8 @@
 import { parentPort, workerData } from "worker_threads";
 import * as XLSX from "xlsx";
+import { PivotConfig } from "./types";
 
-const { filePath, pivot, sheetName } = workerData;
+const { filePath, pivots, sheetName } = workerData;
 
 const workbook = XLSX.readFile(filePath);
 const sheet = workbook.Sheets[sheetName];
@@ -12,42 +13,48 @@ if (!sheet) {
 
 const data = XLSX.utils.sheet_to_json<any>(sheet);
 
-const hasColumnPivot = pivot.columns.length > 0;
-
-const result: any = {};
+const results: any = pivots.map(() => ({}));
 
 for (const row of data) {
-  // Build row key
-  const rowKey = pivot.rows.map((k: string) => row[k]).join(" | ");
+  for (let i = 0; i < pivots.length; i++) {
+    const pivot = pivots[i];
+    const result = results[i];
+    const hasColumnPivot = pivot.columns?.length > 0;
 
-  const colKey = hasColumnPivot
-    ? pivot.columns.map((k: string) => row[k]).join(" | ")
-    : null;
+    // Build row key
+    const rowKey = pivot.rows.map((k: string) => row[k]).join(" | ");
 
-  // init container
-  result[rowKey] ??= hasColumnPivot ? {} : {};
-  if (hasColumnPivot) {
-    result[rowKey][colKey!] ??= {};
-  }
+    const colKey = hasColumnPivot
+      ? pivot.columns.map((k: string) => row[k]).join(" | ")
+      : null;
 
-  for (const [field, op] of Object.entries(pivot.values)) {
-    const target = hasColumnPivot ? result[rowKey][colKey!] : result[rowKey];
-
-    target[field] ??= 0;
-
-    if (op === "sum") {
-      target[field] += Number(row[field] ?? 0);
+    // init container
+    result[rowKey] ??= hasColumnPivot ? {} : {};
+    if (hasColumnPivot) {
+      result[rowKey][colKey!] ??= {};
     }
 
-    if (op === "count") {
-      target[field] += 1;
+    for (const [field, op] of Object.entries(pivot.values)) {
+      const target = hasColumnPivot ? result[rowKey][colKey!] : result[rowKey];
+
+      target[field] ??= 0;
+
+      if (op === "sum") {
+        target[field] += Number(row[field] ?? 0);
+      }
+
+      if (op === "count") {
+        target[field] += 1;
+      }
     }
   }
 }
 
-parentPort?.postMessage({
+const finalResults = pivots.map((pivot: PivotConfig, index: number) => ({
   rows: pivot.rows,
   columns: pivot.columns,
   values: pivot.values,
-  data: result,
-});
+  data: results[index],
+}));
+
+parentPort?.postMessage({ finalResults });

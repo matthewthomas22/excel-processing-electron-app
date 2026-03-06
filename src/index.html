@@ -19,7 +19,17 @@
         Run Pivot
       </button>
     </div>
-    <div id="pivotTable" class="mt-6 overflow-auto"></div>
+    <div class="flex w-screen">
+      <div id="pivotTable" class="mt-6 overflow-scroll h-[60vh] w-[30vw]"></div>
+      <div
+        id="pivotTableSpad"
+        class="mt-6 overflow-scroll h-[60vh] w-[30vw]"
+      ></div>
+      <div
+        id="pivotTableLabel"
+        class="mt-6 overflow-scroll h-[60vh] w-[30vw]"
+      ></div>
+    </div>
 
     <script src="./renderer.js"></script>
   </body>

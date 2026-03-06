@@ -5,8 +5,8 @@ import type { PivotConfig } from "./types";
 console.log("✅ preload loaded");
 
 contextBridge.exposeInMainWorld("api", {
-  pivotExcel: (filePath: string, pivot: PivotConfig, sheetName: string) =>
-    ipcRenderer.invoke("excel:pivot", { filePath, pivot, sheetName }),
+  pivotExcel: (filePath: string, pivots: PivotConfig[], sheetName: string) =>
+    ipcRenderer.invoke("excel:pivot", { filePath, pivots, sheetName }),
 
   getFilePath: (file: File) => webUtils.getPathForFile(file),
   // ping: () => "pong",
